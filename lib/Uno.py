@@ -35,6 +35,8 @@ class Game:
 		self.deck = []
 		self.discard = []
 
+		self.rules = {}
+
 	def getTopCard(self, pile='deck'):
 		if pile == 'deck':
 			return self.deck[len(self.deck)-1]
@@ -169,6 +171,7 @@ def play(p=2):
 
 			if 0 in [p_.cardCount for p_ in hands]:
 				break
+			if game.getTopCard('discard') 
 
 def main(testing=False):
 	play(3)
