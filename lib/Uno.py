@@ -17,7 +17,8 @@ class Game:
 	    				 'n9r', 'n9r', 'n9y', 'n9y', 'n9g', 'n9g', 'n9b', 'n9b',
 	    				 'n0r', 'n0y', 'n0g', 'n0b',
 	    				 'asr', 'asr', 'asy', 'asy', 'asg', 'asg', 'asb', 'asb',
-	    				 'arr', 'arr', 'ary', 'ary', 'arg', 'arg', 'arb', 'arb',
+	    				 # 'arr', 'arr', 'ary', 'ary', 'arg', 'arg', 'arb', 'arb',
+						 # Reverse cards coming soon!
 	    				 'd2r', 'd2r', 'd2y', 'd2y', 'd2g', 'd2g', 'd2b', 'd2b',
 	    				 'd4w', 'd4w', 'd4w', 'd4w',
 	    				 'cw', 'cw', 'cw', 'cw') # Constant list of cards (tuples can't be changed)
@@ -58,10 +59,12 @@ class Game:
 			hat.pop(card)
 
 	def matchCard(self, card1, card2):
-		return card1.type == card2.type or \                # Match card type
-			   card1.symbol == card2.symbol or \            # Match card symbol
-			   card1.color == card2.color or \              # Match card color
-			   'wild' in card1.full or 'wild' in card2.full # Either card is a wild
+		card1 = Card(card1)
+		card2 = Card(card2)
+		return card1.type == card2.type or \
+			   card1.symbol == card2.symbol or \
+			   card1.color == card2.color or \
+			   'wild' in card1.full or 'wild' in card2.full
 
 game = Game()
 
@@ -95,6 +98,13 @@ class Card:
 	... and so on and vice versa."""
 
 	def __init__(self, code):
+		self.type = None
+		self.symbol = None
+		self.color = None
+		self.full = None
+		self.code = None
+
+
 		if len(code) == 2 or len(code) == 3:
 			self.type = game.cardTypes[(lambda c : 'cw' if (c == 'cw') else c[0])(code)]
 			self.symbol = (lambda c : c[1] if (str(c[1]) in '1234567890') else (game.actionCodes[c[1]] if (c[1] in 'sr') else None))(code)
@@ -153,7 +163,7 @@ def turn(player):
 		card = input('Choose a card to discard (leave blank to draw a new one): ')
 		player.discard(card)
 	else:
-		cards = [Card(card).full for card in hands[hands.index(player)].hand if game.matchCard(Card(card), Card(game.getTopCard()))]
+		cards = [Card(card).full for card in hands[hands.index(player)].hand if game.matchCard(card, game.getTopCard())]
 		print(cards)
 		player.discard(random.choice(cards))
 
@@ -163,6 +173,10 @@ def play(p=2):
 	turns = 0
 	while 0 not in [player.cardCount for player in hands]:
 		for player in range(p):
+			if Card(game.getTopCard('discard')).symbol == 'skip':
+				continue
+			# Reverse cards will be added in the future
+
 			turns += 1
 
 			print('Player {}\'s turn! (turn #{})'.format(player+1, turns))
@@ -171,7 +185,6 @@ def play(p=2):
 
 			if 0 in [p_.cardCount for p_ in hands]:
 				break
-			if game.getTopCard('discard') 
 
 def main(testing=False):
 	play(3)
