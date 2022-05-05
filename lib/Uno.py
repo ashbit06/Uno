@@ -120,13 +120,13 @@ class Card:
 			elif code.count(' ') == 1:
 				if re.search(r'[0-9]$', code):
 					self.code = 'n{}{}'.format(code.split(' ')[1],
-											   get_keys_from_value(game.cardColors, code.split(' ')[0])[0])
+											   _.getKeysFromValue(game.cardColors, code.split(' ')[0])[0])
 				else:
-					self.code = 'a{}{}'.format(get_keys_from_value(game.cardColors,  code.split(' ')[1])[0],
-											   get_keys_from_value(game.actionCodes, code.split(' ')[0])[0])
+					self.code = 'a{}{}'.format(_.getKeysFromValue(game.cardColors,  code.split(' ')[1])[0],
+											   _.getKeysFromValue(game.actionCodes, code.split(' ')[0])[0])
 			elif code.count(' ') == 2:
 				self.code = 'd{}{}'.format(code.split(' ')[2],
-										   get_keys_from_value(game.cardColors, code.split(' ')[0])[0])
+										   _.getKeysFromValue(game.cardColors, code.split(' ')[0])[0])
 
 	# def __call__(self):
 	# 	if len(code) == 2 or len(code) == 3:
