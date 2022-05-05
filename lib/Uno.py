@@ -104,7 +104,6 @@ class Card:
 		self.full = None
 		self.code = None
 
-
 		if len(code) == 2 or len(code) == 3:
 			self.type = game.cardTypes[(lambda c : 'cw' if (c == 'cw') else c[0])(code)]
 			self.symbol = (lambda c : c[1] if (str(c[1]) in '1234567890') else (game.actionCodes[c[1]] if (c[1] in 'sr') else None))(code)
