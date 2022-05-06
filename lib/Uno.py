@@ -63,6 +63,15 @@ class Game:
 			   card1.color == card2.color or \
 			   'wild' in card1.full or 'wild' in card2.full
 
+	def _recite(self):
+		print('CARD CODES')
+		print('allCards: {}'.format(self.allCards))
+		print('cardTypes: {}'.format(self.cardTypes))
+		print('cardColors: {}'.format(self.cardColors))
+		print('actionCodes: {}'.format(self.actionCodes))
+		print('\nCARD NAMES')
+		print([Card(card).full for card in self.allCards])
+
 game = Game()
 
 class Player():
