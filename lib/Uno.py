@@ -138,6 +138,8 @@ class Card:
 			else: # Draw cards
 				self.full = '{} {} {}'.format(self.color, self.type, self.symbol)
 
+			self.full = self.full.title()
+
 		else:
 			if code == 'wild':
 				self.code = 'cw'
@@ -185,13 +187,16 @@ def turn(player):
 				cards.append(card)
 				print(c)
 		if len(cards) > 0:
-			card = Card(input('Choose a card to discard (leave blank to draw a new one): '))
+			print('The card you have to match is a '+Card(game.discard.getTopCard()).full+' card')
+			card = Card(input('Choose a card to place (leave blank to draw a new one): '))
 			player.discard(card.code)
 		else:
+			print('The card you had to match was a '+Card(game.discard.getTopCard()).full+' card')
 			player.draw()
 			card = Card(player.getTopCard())
 			print('You didn\'t have any dards that you could\'ve drawn, so you draw a {} card instead.'.format(card.full))
 	else:
+		print('The card Player {} has to match is a {} card'.format(Card(player, game.discard.getTopCard()).full))
 		cards = []
 		for card in hands[hands.index(player)].hand:
 			if game.matchCard(card, game.discard.getTopCard()):

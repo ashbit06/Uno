@@ -18,6 +18,8 @@ How many players?
 Enter in a number 2-8 (I always use 3 players when testing).
 
 ## TODO
+- [x] Fix the card dealing (currently gives each player *21 cards*???)
+- [ ] Fix card matching on turn
 - [ ] Fix card parsing...
 	- [x] From a card code
 	- [ ] From a card name
@@ -26,5 +28,3 @@ Enter in a number 2-8 (I always use 3 players when testing).
 	- [ ] Skip cards
 	- [ ] Reverse cards
 	- [ ] Wild cards
-- [ ] Fix turns
-- [x] Fix the card dealing (currently gives each player *21 cards*???)
