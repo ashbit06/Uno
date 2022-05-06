@@ -1,3 +1,3 @@
 import Uno
 
-Uno.main(3)
+Uno.main(int(input('How many players? ')))
