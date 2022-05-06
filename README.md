@@ -6,10 +6,18 @@ I try to have this follow the rules of Uno, with no special rules such as the 7'
 
 Just run it in python or like this in the terminal:
 ```
-$ python3 /file/path/Uno.py
+$ python3 /file/path/run.py
 ```
 
-# TODO
+## How to Play
+### Starting the Game
+**Be sure to run `run.py` and not `Uno.py`.** Once you start the program, you will be prompted with a message like this:
+```
+How many players?
+```
+Enter in a number 2-8 (I always use 3 players when testing).
+
+## TODO
 - [ ] Fix card parsing...
 	- [x] From a card code
 	- [ ] From a card name
@@ -19,3 +27,4 @@ $ python3 /file/path/Uno.py
 	- [ ] Reverse cards
 	- [ ] Wild cards
 - [ ] Fix turns
+- [ ] Fix the card dealing (currently gives each player *21 cards*???)
