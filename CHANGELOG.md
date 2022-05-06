@@ -11,3 +11,4 @@
 - Added a `_recite()` method to the `Game` object for testing purposes
 - Renamed the `nothing` cardType to `normal`
 - Fixed card parsing from card codes
+# 0.1.3
