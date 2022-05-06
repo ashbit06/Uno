@@ -20,6 +20,7 @@ class Game:
 	    				 'd4w', 'd4w', 'd4w', 'd4w',
 	    				 'cw', 'cw', 'cw', 'cw') # Constant list of cards (tuples can't be changed)
 		self.cardTypes = {'n': 'nothing',
+		self.cardTypes = {'n': 'normal',
 				  		  'a': 'action',
 				  		  'd': 'draw',
 				  		  'cw': 'wild'}
@@ -70,6 +71,7 @@ class Game:
 		print('cardColors: {}'.format(self.cardColors))
 		print('actionCodes: {}'.format(self.actionCodes))
 		print('\nCARD NAMES')
+		print('\nCARD NAMES (from Card)')
 		print([Card(card).full for card in self.allCards])
 
 game = Game()
