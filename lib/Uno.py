@@ -87,9 +87,10 @@ game = Game()
 
 class Player():
 	"""Player object constructor"""
-	def __init__(self, hand=[]):
-		self.hand = hand
+	def __init__(self):
+		self.hand = []
 		self.cardCount = len(self.hand)
+		self.draw(7)
 
 	def getTopCard(self):
 		return self.hand[len(self.hand)-1]
@@ -165,9 +166,8 @@ def setup(players=2):
 
 	game.shuffle()
 
-	for player in range(players):
-		hands.append(Player()) # Make a Player object
-		hands[player].draw(7)
+	for i in range(players):
+		hands.append(Player())
 
 	game.discard.cards.append(game.deck.getTopCard()) # Get the starting card
 	game.deck.cards.pop(game.deck.cards.index(game.deck.getTopCard()))
@@ -227,3 +227,6 @@ def main(testing=False):
 
 if __name__ == '__main__':
 	game._recite()
+	setup(3)
+	for p in hands:
+		print('Player {}\'s hand: {}'.format(hands[hands.index(p)], [i for i in p.hand]))

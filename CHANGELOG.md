@@ -12,3 +12,5 @@
 - Renamed the `nothing` cardType to `normal`
 - Fixed card parsing from card codes
 # 0.1.3
+## Uno.py
+- Fixed `setup()` where it would give each player the amount of players times 7 cards

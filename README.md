@@ -27,4 +27,4 @@ Enter in a number 2-8 (I always use 3 players when testing).
 	- [ ] Reverse cards
 	- [ ] Wild cards
 - [ ] Fix turns
-- [ ] Fix the card dealing (currently gives each player *21 cards*???)
+- [x] Fix the card dealing (currently gives each player *21 cards*???)
