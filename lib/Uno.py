@@ -1,6 +1,8 @@
 import random,re
 import methods as _
 
+testing = __name__ == '__main__'
+
 class Game:
 	class deck:
 		"""Deck subobject"""
@@ -120,29 +122,21 @@ class Card:
 		self.code = None
 
 		if len(code) == 2 or len(code) == 3:
-			# self.type = None
-			# self.symbol = None
-			# self.color = None
 			self.full = None
-			#
-			# if code == 'cw':
-			# 	self.type = game.cardTypes['cw']
-			# else:
-			# 	self.type = game.cardTypes[code[0]]
-
 			self.type = game.cardTypes[(lambda c : 'cw' if (c == 'cw') else c[0])(code)]
 			self.symbol = (lambda c : c[1] if (str(c[1]) in '1234567890') else (game.actionCodes[c[1]] if (c[1] in 'sr') else None))(code)
 			self.color = (lambda c : (game.cardColors[c[2]] if (len(c) == 3) else 'wild'))(code)
-			# print(self.symbol)
 
-			if self.symbol == None:
+			if testing:
+				print(self.color, self.type, self.symbol)
+
+			if self.type == 'wild': # Wild cards
 				self.full = 'wild'
-			elif self.symbol == 'skip' or self.symbol == 'reverse' or str(self.symbol) in '1234567890':
+			elif self.type == 'normal' or self.type == 'action': # Normal and Action cards
 				self.full = '{} {}'.format(self.color, self.symbol)
-			elif self.color == 'wild':
+			else: # Draw cards
 				self.full = '{} {} {}'.format(self.color, self.type, self.symbol)
 
-			print(self.type)
 		else:
 			if code == 'wild':
 				self.code = 'cw'
