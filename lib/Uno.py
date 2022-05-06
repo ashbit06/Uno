@@ -2,6 +2,22 @@ import random,re
 import methods as _
 
 class Game:
+	class deck:
+		"""Deck subobject"""
+		def __init__(self):
+			self.cards = []
+
+		def getTopCard(self):
+			return self.cards[len(self.cards)-1]
+
+	class discard:
+		"""Discard pile subobject"""
+		def __init__(self):
+			self.cards = []
+
+		def getTopCard(self, pile='deck'):
+			return self.cards[len(self.cards)-1]
+
 	def __init__(self):
 		self.allCards = ('n1r', 'n1r', 'n1y', 'n1y', 'n1g', 'n1g', 'n1b', 'n1b',
 	    				 'n2r', 'n2r', 'n2y', 'n2y', 'n2g', 'n2g', 'n2b', 'n2b',
@@ -19,7 +35,6 @@ class Game:
 	    				 'd2r', 'd2r', 'd2y', 'd2y', 'd2g', 'd2g', 'd2b', 'd2b',
 	    				 'd4w', 'd4w', 'd4w', 'd4w',
 	    				 'cw', 'cw', 'cw', 'cw') # Constant list of cards (tuples can't be changed)
-		self.cardTypes = {'n': 'nothing',
 		self.cardTypes = {'n': 'normal',
 				  		  'a': 'action',
 				  		  'd': 'draw',
@@ -31,29 +46,22 @@ class Game:
 						  'w': 'wild'}
 		self.actionCodes = {'r': 'reverse',
 							's': 'skip'}
-		self.deck = []
-		self.discard = []
-
+		self.deck = Game.deck()
+		self.discard = Game.discard()
 		self.rules = {}
 
-	def getTopCard(self, pile='deck'):
-		if pile == 'deck':
-			return self.deck[len(self.deck)-1]
-		else:
-			return self.discard[len(self.discard)-1]
-
 	def deckCheck():
-		if len(self.deck) < 1:
-			self.deck = [c for c in self.discard]
-			self.discard = self.deck.getTopCard()
-			self.deck.pop(self.deck.index(self.getTopCard()))
+		if len(self.deck.cards) < 1:
+			self.deck.cards = [c for c in self.discard.cards]
+			self.discard.cards = self.deck.getTopCard()
+			self.deck.cards.pop(self.deck.cards.index(self.deck.getTopCard()))
 
 	def shuffle(self):
 		hat = [i for i in self.allCards]
 
 		for i in hat:
 			card = random.randint(0, len(hat)-1) # Gets the index of a card so it works with duplicates
-			self.deck.append(hat[card])
+			self.deck.cards.append(hat[card])
 			hat.pop(card)
 
 	def matchCard(self, card1, card2):
@@ -70,7 +78,6 @@ class Game:
 		print('cardTypes: {}'.format(self.cardTypes))
 		print('cardColors: {}'.format(self.cardColors))
 		print('actionCodes: {}'.format(self.actionCodes))
-		print('\nCARD NAMES')
 		print('\nCARD NAMES (from Card)')
 		print([Card(card).full for card in self.allCards])
 
@@ -87,13 +94,13 @@ class Player():
 
 	def draw(self, amt):
 		for i in range(amt):
-			self.hand.append(game.getTopCard()) # Add top card from deck to player X's hand
-			game.deck.pop() # Remove the top card from the deck
+			self.hand.append(game.deck.getTopCard()) # Add top card from deck to player X's hand
+			game.deck.cards.pop() # Remove the top card from the deck
 			self.cardCount += 1
 
 	def discard(self, c):
 		self.hand.pop(self.hand.index(c))
-		game.discard.append(c)
+		game.discard.cards.append(c)
 		self.cardCount -= 1
 
 class Card:
@@ -113,18 +120,29 @@ class Card:
 		self.code = None
 
 		if len(code) == 2 or len(code) == 3:
+			# self.type = None
+			# self.symbol = None
+			# self.color = None
+			self.full = None
+			#
+			# if code == 'cw':
+			# 	self.type = game.cardTypes['cw']
+			# else:
+			# 	self.type = game.cardTypes[code[0]]
+
 			self.type = game.cardTypes[(lambda c : 'cw' if (c == 'cw') else c[0])(code)]
 			self.symbol = (lambda c : c[1] if (str(c[1]) in '1234567890') else (game.actionCodes[c[1]] if (c[1] in 'sr') else None))(code)
 			self.color = (lambda c : (game.cardColors[c[2]] if (len(c) == 3) else 'wild'))(code)
+			# print(self.symbol)
 
-			self.full = None
-
-			if self.symbol != None:
+			if self.symbol == None:
 				self.full = 'wild'
 			elif self.symbol == 'skip' or self.symbol == 'reverse' or str(self.symbol) in '1234567890':
 				self.full = '{} {}'.format(self.color, self.symbol)
-			elif self.type == 'draw':
-				self.full = '{} draw {}'.format(self.color, self.symbol)
+			elif self.color == 'wild':
+				self.full = '{} {} {}'.format(self.color, self.type, self.symbol)
+
+			print(self.type)
 		else:
 			if code == 'wild':
 				self.code = 'cw'
@@ -157,44 +175,61 @@ def setup(players=2):
 		hands.append(Player()) # Make a Player object
 		hands[player].draw(7)
 
-	game.discard.append(game.getTopCard()) # Get the starting card
-	game.deck.pop(game.deck.index(game.getTopCard()))
+	game.discard.cards.append(game.deck.getTopCard()) # Get the starting card
+	game.deck.cards.pop(game.deck.cards.index(game.deck.getTopCard()))
 
-	while not game.getTopCard('discard').startswith('n'): # Starting card cannot be an action/wild card
-		game.discard.append(game.getTopCard())
-		game.deck.pop(game.deck.index(game.getTopCard()))
+	while not game.discard.getTopCard().startswith('n'): # Starting card cannot be an action/wild card
+		game.discard.cards.append(game.deck.getTopCard())
+		game.deck.cards.pop(game.deck.cards.index(game.deck.getTopCard()))
 
 def turn(player):
 	if player == 0:
-		print([Card(card).full for card in hands[0].hand if game.matchCard(Card(card), Card(game.getTopCard()))])
-		card = input('Choose a card to discard (leave blank to draw a new one): ')
-		player.discard(card)
+		cards = []
+		for card in hands[0].hand:
+			if game.matchCard(card, game.deck.getTopCard()):
+				c = Card(card).full
+				cards.append(card)
+				print(c)
+		if len(cards) > 0:
+			card = Card(input('Choose a card to discard (leave blank to draw a new one): '))
+			player.discard(card.code)
+		else:
+			player.draw()
+			card = Card(player.getTopCard())
+			print('You didn\'t have any dards that you could\'ve drawn, so you draw a {} card instead.'.format(card.full))
 	else:
-		cards = [Card(card).full for card in hands[hands.index(player)].hand if game.matchCard(card, game.getTopCard())]
-		print(cards)
+		cards = []
+		for card in hands[hands.index(player)].hand:
+			if game.matchCard(card, game.discard.getTopCard()):
+				cards.append(card)
 		player.discard(random.choice(cards))
+	return card
 
-def play(p=2):
+def play(p=2, testing=False):
 	setup(p)
 
 	turns = 0
 	while 0 not in [player.cardCount for player in hands]:
 		for player in range(p):
-			if Card(game.getTopCard('discard')).symbol == 'skip':
+			hand = hands[player].hand
+
+			if Card(game.discard.getTopCard()).symbol == 'skip':
 				continue
 			# Reverse cards will be added in the future
 
 			turns += 1
 
 			print('Player {}\'s turn! (turn #{})'.format(player+1, turns))
-			turn(hands[player])
-			print('Player {} discarded a {} card!'.format(player+1, Card(game.getTopCard('discard')).full))
+			if testing:
+				print(hand)
+			discarded = turn(player)
+			print('Player {} discarded a {} card!'.format(player+1, Card(discarded).full))
 
 			if 0 in [p_.cardCount for p_ in hands]:
 				break
 
 def main(testing=False):
-	play(3)
+	play(3, testing)
 
 if __name__ == '__main__':
-	main()
+	game._recite()

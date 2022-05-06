@@ -9,3 +9,4 @@
 - Added `run.py`
 ## Uno.py
 - Added a `_recite()` method to the `Game` object for testing purposes
+- Renamed the `nothing` cardType to `normal`
