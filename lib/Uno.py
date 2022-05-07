@@ -91,6 +91,7 @@ class Game:
 		print(list([Card(card).full for card in self.allCards]))
 		testNames = [Card(random.choice([c for c in self.allCards if Card(c).type == self.cardTypes[type]])).full for type in self.cardTypes.keys()]
 		print('One card from each type: '+str([card for card in testNames]))
+		print('One card from each type: '+str([card for card in [Card(random.choice([c for c in self.allCards if Card(c).type == self.cardTypes[type]])).full for type in self.cardTypes.keys()]]))
 
 class Player():
 	"""Player object constructor"""
