@@ -1,7 +1,13 @@
 import random,re
-import methods as _
+from methods import getKeysFromValue
+global players
 
 testing = __name__ == '__main__'
+
+if testing:
+	players = int(input('How many players? '))
+	while players < 2 and players > 8:
+		players = int(input('\nYou can\'t have {} players!\nPlayer count must be between 2 and 8.\nTry again: '.format(players)))
 
 class Game:
 	class deck:
@@ -20,7 +26,7 @@ class Game:
 		def getTopCard(self, pile='deck'):
 			return self.cards[len(self.cards)-1]
 
-	def __init__(self):
+	def __init__(self, players):
 		self.allCards = ('n1r', 'n1r', 'n1y', 'n1y', 'n1g', 'n1g', 'n1b', 'n1b',
 	    				 'n2r', 'n2r', 'n2y', 'n2y', 'n2g', 'n2g', 'n2b', 'n2b',
 	    				 'n3r', 'n3r', 'n3y', 'n3y', 'n3g', 'n3g', 'n3b', 'n3b',
@@ -51,8 +57,8 @@ class Game:
 		self.deck = Game.deck()
 		self.discard = Game.discard()
 		self.rules = {}
+		self.players = int(players)
 
-	def deckCheck():
 	def deckCheck(self):
 		if len(self.deck.cards) < 1:
 			self.deck.cards = [c for c in self.discard.cards]
@@ -82,9 +88,9 @@ class Game:
 		print('cardColors: {}'.format(self.cardColors))
 		print('actionCodes: {}'.format(self.actionCodes))
 		print('\nCARD NAMES (from Card)')
-		print([Card(card).full for card in self.allCards])
-
-game = Game()
+		print(list([Card(card).full for card in self.allCards]))
+		testNames = [Card(random.choice([c for c in self.allCards if Card(c).type == self.cardTypes[type]])).full for type in self.cardTypes.keys()]
+		print('One card from each type: '+str([card for card in testNames]))
 
 class Player():
 	"""Player object constructor"""
@@ -129,8 +135,8 @@ class Card:
 			self.symbol = (lambda c : c[1] if (str(c[1]) in '1234567890') else (game.actionCodes[c[1]] if (c[1] in 'sr') else None))(code)
 			self.color = (lambda c : (game.cardColors[c[2]] if (len(c) == 3) else 'wild'))(code)
 
-			if testing:
-				print(self.color, self.type, self.symbol)
+			# if testing:
+			# 	print(self.color, self.type, self.symbol)
 
 			if self.type == 'wild': # Wild cards
 				self.full = 'wild'
@@ -140,26 +146,17 @@ class Card:
 				self.full = '{} {} {}'.format(self.color, self.type, self.symbol)
 
 			self.full = self.full.title()
-
 		else:
+			code = code.lower()
 			if code == 'wild':
 				self.code = 'cw'
 			elif code.count(' ') == 1:
 				if re.search(r'[0-9]$', code):
-					self.code = 'n{}{}'.format(code.split(' ')[1],
-											   _.getKeysFromValue(game.cardColors, code.split(' ')[0])[0])
+					self.code = 'n{}{}'.format(code.split(' ')[1],getKeysFromValue(game.cardColors,code.split(' ')[0])[0])
 				else:
-					self.code = 'a{}{}'.format(_.getKeysFromValue(game.cardColors,  code.split(' ')[1])[0],
-											   _.getKeysFromValue(game.actionCodes, code.split(' ')[0])[0])
+					self.code = 'a{}{}'.format(getKeysFromValue(game.cardColors,code.split(' ')[1])[0],getKeysFromValue(game.actionCodes,code.split(' ')[0])[0])
 			elif code.count(' ') == 2:
-				self.code = 'd{}{}'.format(code.split(' ')[2],
-										   _.getKeysFromValue(game.cardColors, code.split(' ')[0])[0])
-
-	# def __call__(self):
-	# 	if len(code) == 2 or len(code) == 3:
-	# 		return self.full
-	# 	else:
-	# 		return self.code
+				self.code = 'd{}{}'.format(code.split(' ')[2],getKeysFromValue(game.cardColors,code.split(' ')[0])[0])
 
 hands = []
 
@@ -189,7 +186,7 @@ def turn(player):
 				print(c)
 		if len(cards) > 0:
 			print('The card you have to match is a '+Card(game.discard.getTopCard()).full+' card')
-			card = Card(input('Choose a card to place (leave blank to draw a new one): '))
+			card = Card(input('Choose a card to place (leave blank to draw a new one): ').title())
 			player.discard(card.code)
 		else:
 			print('The card you had to match was a '+Card(game.discard.getTopCard()).full+' card')
@@ -228,11 +225,15 @@ def play(p=2, testing=False):
 			if 0 in [p_.cardCount for p_ in hands]:
 				break
 
-def main(testing=False):
-	play(3, testing)
+def main(testing=False,):
+	play(players, testing)
+
+def test(testing=True, _players=3):
+	game = Game(_players)
+	game._recite()
+	setup(_players)
+	for p in range(_players):
+		print('Player {}\'s hand: {}'.format(p+1, [i for i in hands[p].hand]))
 
 if __name__ == '__main__':
-	game._recite()
-	setup(3)
-	for p in hands:
-		print('Player {}\'s hand: {}'.format(hands[hands.index(p)], [i for i in p.hand]))
+	test(3)
