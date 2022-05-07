@@ -22,7 +22,7 @@ Enter in a number 2-8 (I always use 3 players when testing).
 - [ ] Fix card matching on turn
 - [ ] Fix card parsing...
 	- [x] From a card code
-	- [ ] From a card name
+	- [x] From a card name
 - [ ] Make all cards functional
 	- [x] Number cards
 	- [ ] Skip cards

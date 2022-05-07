@@ -1,9 +1,13 @@
+# 0.1.4
+## Uno.py
+### Game()
+<!-- - Fixed card matching on turn -->
 # 0.1.3
 ## General Changes
 - Made player count prompt effective when running from `run.py`, and ineffective when running from `Uno.py`
 ## Uno.py
 - Fixed `setup()` where it would give each player the amount of players times 7 cards
-- Began work on card matching on turn
+- Began work on fixing card matching on turn
 ### Game()
 - Fixed a syntax error in `deckCheck()`
 - Fixed `AttributeError: 'int' object has no attribute 'discard'` in line 191
