@@ -189,6 +189,8 @@ def turn(player):
 			print('The card you have to match is a '+Card(game.discard.getTopCard()).full+' card')
 			card = Card(input('Choose a card to place (leave blank to draw a new one): ').title())
 			player.discard(card.code)
+			card = Card(input('Choose a card to place (leave blank to draw a new one): ').title()).code
+			hands[player].discard(card)
 		else:
 			print('The card you had to match was a '+Card(game.discard.getTopCard()).full+' card')
 			player.draw()
