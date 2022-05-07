@@ -53,6 +53,7 @@ class Game:
 		self.rules = {}
 
 	def deckCheck():
+	def deckCheck(self):
 		if len(self.deck.cards) < 1:
 			self.deck.cards = [c for c in self.discard.cards]
 			self.discard.cards = self.deck.getTopCard()

@@ -16,5 +16,7 @@
 ## Uno.py
 - Fixed `setup()` where it would give each player the amount of players times 7 cards
 <!-- - Fixed card matching on turn -->
+### Game()
+- Fixed a syntax error in `deckCheck()`
 ### Card()
 - Made `Card().full` return a Title Case string
