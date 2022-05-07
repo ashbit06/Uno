@@ -3,8 +3,9 @@ from methods import getKeysFromValue
 global players
 
 testing = __name__ == '__main__'
+hands = []
 
-if testing:
+if not testing:
 	players = int(input('How many players? '))
 	while players < 2 and players > 8:
 		players = int(input('\nYou can\'t have {} players!\nPlayer count must be between 2 and 8.\nTry again: '.format(players)))
@@ -26,7 +27,7 @@ class Game:
 		def getTopCard(self, pile='deck'):
 			return self.cards[len(self.cards)-1]
 
-	def __init__(self, players):
+	def __init__(self, players=0):
 		self.allCards = ('n1r', 'n1r', 'n1y', 'n1y', 'n1g', 'n1g', 'n1b', 'n1b',
 	    				 'n2r', 'n2r', 'n2y', 'n2y', 'n2g', 'n2g', 'n2b', 'n2b',
 	    				 'n3r', 'n3r', 'n3y', 'n3y', 'n3g', 'n3g', 'n3b', 'n3b',
@@ -38,8 +39,7 @@ class Game:
 	    				 'n9r', 'n9r', 'n9y', 'n9y', 'n9g', 'n9g', 'n9b', 'n9b',
 	    				 'n0r', 'n0y', 'n0g', 'n0b',
 	    				 'asr', 'asr', 'asy', 'asy', 'asg', 'asg', 'asb', 'asb',
-	    				 # 'arr', 'arr', 'ary', 'ary', 'arg', 'arg', 'arb', 'arb',
-						 # Reverse cards coming soon!
+	    				 # 'arr', 'arr', 'ary', 'ary', 'arg', 'arg', 'arb', 'arb', # Reverse cards coming soon!
 	    				 'd2r', 'd2r', 'd2y', 'd2y', 'd2g', 'd2g', 'd2b', 'd2b',
 	    				 'd4w', 'd4w', 'd4w', 'd4w',
 	    				 'cw', 'cw', 'cw', 'cw') # Constant list of cards (tuples can't be changed)
@@ -76,10 +76,11 @@ class Game:
 	def matchCard(self, card1, card2):
 		card1 = Card(card1)
 		card2 = Card(card2)
-		return card1.type == card2.type or \
-			   card1.symbol == card2.symbol or \
-			   card1.color == card2.color or \
-			   'wild' in card1.full or 'wild' in card2.full
+
+		if card1.type == self.cardTypes['n'] or card1.type == self.cardTypes['a']:
+			return card1.color == card2.color or card1.symbol == card2.symbol
+		elif card1.type == self.cardTypes['d']:
+			return card1.color
 
 	def _recite(self):
 		print('CARD CODES')
@@ -89,9 +90,9 @@ class Game:
 		print('actionCodes: {}'.format(self.actionCodes))
 		print('\nCARD NAMES (from Card)')
 		print(list([Card(card).full for card in self.allCards]))
-		testNames = [Card(random.choice([c for c in self.allCards if Card(c).type == self.cardTypes[type]])).full for type in self.cardTypes.keys()]
-		print('One card from each type: '+str([card for card in testNames]))
-		print('One card from each type: '+str([card for card in [Card(random.choice([c for c in self.allCards if Card(c).type == self.cardTypes[type]])).full for type in self.cardTypes.keys()]]))
+		print('One card from each type: '+str([card for card in[Card(random.choice([c for c in self.allCards if Card(c).type==self.cardTypes[type]])).full for type in self.cardTypes.keys()]]))
+
+game = Game()
 
 class Player():
 	"""Player object constructor"""
@@ -159,8 +160,6 @@ class Card:
 			elif code.count(' ') == 2:
 				self.code = 'd{}{}'.format(code.split(' ')[2],getKeysFromValue(game.cardColors,code.split(' ')[0])[0])
 
-hands = []
-
 def setup(players=2):
 	if players > 8 or players < 2:
 		raise ValueError('Player count cannot be less than 2 or greater than 8.')
@@ -178,17 +177,16 @@ def setup(players=2):
 		game.deck.cards.pop(game.deck.cards.index(game.deck.getTopCard()))
 
 def turn(player):
+	card = None
 	if player == 0:
 		cards = []
-		for card in hands[0].hand:
-			if game.matchCard(card, game.deck.getTopCard()):
-				c = Card(card).full
-				cards.append(card)
+		for card_ in hands[0].hand:
+			if game.matchCard(card_, game.deck.getTopCard()):
+				c = Card(card_).full
+				cards.append(card_)
 				print(c)
 		if len(cards) > 0:
 			print('The card you have to match is a '+Card(game.discard.getTopCard()).full+' card')
-			card = Card(input('Choose a card to place (leave blank to draw a new one): ').title())
-			player.discard(card.code)
 			card = Card(input('Choose a card to place (leave blank to draw a new one): ').title()).code
 			hands[player].discard(card)
 		else:
@@ -196,17 +194,26 @@ def turn(player):
 			player.draw()
 			card = Card(player.getTopCard())
 			print('You didn\'t have any dards that you could\'ve drawn, so you draw a {} card instead.'.format(card.full))
+			card = Card(card).code
 	else:
 		print('The card Player {} has to match is a {} card'.format(Card(player, game.discard.getTopCard()).full))
 		cards = []
-		for card in hands[hands.index(player)].hand:
-			if game.matchCard(card, game.discard.getTopCard()):
-				cards.append(card)
-		player.discard(random.choice(cards))
-	return card
+
+		for card_ in hands[hands.index(player)].hand:
+			if game.matchCard(card_, game.discard.getTopCard()):
+				cards.append(card_)
+		card = random.choice(cards)
+		player.discard(card)
+		print('Player {} discarded a {} card!'.format(player+1, Card(card).full))
+
+	card = Card(card)
+	if card.type == game.cardTypes['cw']:
+		card.color = random.choice(game.cardColors)
+	return Card(card).code
 
 def play(p=2, testing=False):
 	setup(p)
+	game.players = p
 
 	turns = 0
 	while 0 not in [player.cardCount for player in hands]:
@@ -232,7 +239,7 @@ def main(testing=False,):
 	play(players, testing)
 
 def test(testing=True, _players=3):
-	game = Game(_players)
+	game.players = _players
 	game._recite()
 	setup(_players)
 	for p in range(_players):
