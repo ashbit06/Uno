@@ -180,11 +180,12 @@ def turn(player):
 	card = None
 	if player == 0:
 		cards = []
+		print('These are the cards you can draw on this turn:')
 		for card_ in hands[0].hand:
 			if game.matchCard(card_, game.deck.getTopCard()):
-				c = Card(card_).full
 				cards.append(card_)
-				print(c)
+				card = Card(card_)
+				print(card.full)
 		if len(cards) > 0:
 			print('The card you have to match is a '+Card(game.discard.getTopCard()).full+' card')
 			card = Card(input('Choose a card to place (leave blank to draw a new one): ').title()).code
@@ -193,7 +194,7 @@ def turn(player):
 			print('The card you had to match was a '+Card(game.discard.getTopCard()).full+' card')
 			player.draw()
 			card = Card(player.getTopCard())
-			print('You didn\'t have any dards that you could\'ve drawn, so you draw a {} card instead.'.format(card.full))
+			print('You didn\'t have any cards that you could\'ve drawn, so you draw a {} card instead.'.format(card.full))
 			card = Card(card).code
 	else:
 		print('The card Player {} has to match is a {} card'.format(Card(player, game.discard.getTopCard()).full))
