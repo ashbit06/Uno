@@ -1,7 +1,13 @@
 # 0.1.4
 ## Uno.py
+- Fixed so many things that I've lost track (mostly because I lost the diff)
+- Also aded a recursion error. Need to find out what's causing it
 ### Game()
-<!-- - Fixed card matching on turn -->
+- Fixed card matching on turn
+- Changed the type values for wild cards
+### Card()
+- Object initialization is simpler
+- Now supports all Wild card colors
 # 0.1.3
 ## General Changes
 - Made player count prompt effective when running from `run.py`, and ineffective when running from `Uno.py`
