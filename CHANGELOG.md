@@ -1,3 +1,12 @@
+# 0.1.5
+## Uno.py
+### Game()
+- Moved the dictionaries inside `__init__()` to `UnoVars.py` (more on that below)
+### Card()
+- Began work on the recursion error
+## UnoVars.py (formerly known as methods.py)
+- Renamed to `UnoVars.py`
+- Game lists and disctionaries have been moved here
 # 0.1.4
 ## Uno.py
 - Fixed so many things that I've lost track (mostly because I lost the diff)
