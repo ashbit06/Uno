@@ -1,3 +1,17 @@
+# 0.1.5
+### **NOTICE**
+**Updates will be less frequent for until maybe July 1, 2022.**
+**I am currently busy with homework and the first weeks of summer break might be rough.**
+***Please be patient.***
+## Uno.py
+### Game()
+- Moved the dictionaries inside `__init__()` to `UnoVars.py` (more on that below)
+### Card()
+- Fixed card selection for when it's your turn
+- Syntax fixes (variable renames, pointless statements removed, etc.)
+## UnoVars.py (formerly known as methods.py)
+- Renamed to `UnoVars.py`
+- Game lists and disctionaries have been moved here
 # 0.1.4
 ## Uno.py
 - Fixed so many things that I've lost track (mostly because I lost the diff)

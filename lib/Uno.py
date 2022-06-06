@@ -1,5 +1,4 @@
-import random,re
-from methods import getKeysFromValue
+import random,re,UnoVars
 global players
 
 testing = __name__ == '__main__'
@@ -8,7 +7,8 @@ hands = []
 if not testing:
     players = int(input('How many players? '))
     while players < 2 and players > 8:
-        players = int(input('\nYou can\'t have {} players!\nPlayer count must be between 2 and 8.\nTry again: '.format(players)))
+        print('\nYou can\'t have '+str(players)+' players!')
+        players = int(input('Player count must be between 2 and 8.\nTry again: '.format(players)))
 
 class Game:
     class newDeck:
@@ -36,45 +36,10 @@ class Game:
             
 
     def __init__(self, players=0):
-        self.cards = (
-            'n1r', 'n1r', 'n1y', 'n1y', 'n1g', 'n1g', 'n1b', 'n1b',
-            'n2r', 'n2r', 'n2y', 'n2y', 'n2g', 'n2g', 'n2b', 'n2b',
-            'n3r', 'n3r', 'n3y', 'n3y', 'n3g', 'n3g', 'n3b', 'n3b',
-            'n4r', 'n4r', 'n4y', 'n4y', 'n4g', 'n4g', 'n4b', 'n4b',
-            'n5r', 'n5r', 'n5y', 'n5y', 'n5g', 'n5g', 'n5b', 'n5b',
-            'n6r', 'n6r', 'n6y', 'n6y', 'n6g', 'n6g', 'n6b', 'n6b',
-            'n7r', 'n7r', 'n7y', 'n7y', 'n7g', 'n7g', 'n7b', 'n7b',
-            'n8r', 'n8r', 'n8y', 'n8y', 'n8g', 'n8g', 'n8b', 'n8b',
-            'n9r', 'n9r', 'n9y', 'n9y', 'n9g', 'n9g', 'n9b', 'n9b',
-            'n0r', 'n0y', 'n0g', 'n0b',
-            'asr', 'asr', 'asy', 'asy', 'asg', 'asg', 'asb', 'asb',
-            'arr', 'arr', 'ary', 'ary', 'arg', 'arg', 'arb', 'arb',
-            'd2r', 'd2r', 'd2y', 'd2y', 'd2g', 'd2g', 'd2b', 'd2b',
-            'd4c', 'd4c', 'd4c', 'd4c',
-            'wwc', 'wwc', 'wwc', 'wwc'
-        ) # Constant list of cards (tuples can't be changed)
-        self.types = {
-            'n': 'normal',
-            'a': 'action',
-            'd': 'draw',
-            'w': 'wild'
-        }
-        self.symbols = {
-            '1':'1','2':'2','3':'3',
-            '4':'4','5':'5','6':'6',
-            '7':'7','8':'8','9':'9',
-            '0':'0',
-            'r': 'reverse',
-            's': 'skip',
-            'w':'wild'
-        }
-        self.colors = {
-            'r': 'red',
-            'b': 'blue',
-            'y': 'yellow',
-            'g': 'green',
-            'c': 'wild'
-        }
+        self.cards = UnoVars.cards
+        self.types = UnoVars.types
+        self.symbols = UnoVars.symbols
+        self.colors = UnoVars.colors
         self.draw = Game.newDeck()
         self.discard = Game.newDeck()
         self.rules = Game.rules(False) # Custom rules would be in here
@@ -82,25 +47,30 @@ class Game:
 
     def deckCheck(self):
         if len(self.draw.cards) < 1:
-            self.draw.cards = [c for c in self.discard.cards]
+            self.draw.cards = self.discard.cards # Removed list comprehension
             self.discard.cards = self.draw.getTopCard()
             self.draw.cards.pop(self.draw.cards.index(self.draw.getTopCard()))
 
     def shuffle(self):
-        hat = [i for i in self.cards]
+        hat = list(self.cards) # Removed list comprehension
 
         for i in hat:
-            card = random.randint(0, len(hat)-1) # Gets the index of a card so it works with duplicates
+            card = random.randint(0, len(hat)-1)
             self.draw.cards.append(hat[card])
             hat.pop(card)
             
     def reverseTurnOrder(self):
-        self.rules.turnOrder = (lambda r : 1 if (r == -1) else -1)(self.rules.turnOrder)
+        if self.rules.turnOrder == -1:
+            self.rules.turnOrder = 1
+        else:
+            self.rules.turnOrder = -1
 
     def matchCard(self, card1, card2):
         card1 = Card(card1)
         card2 = Card(card2)
 
+        # TODO: Debug this. I forget what's wrong at the moment but I can't really
+        #       fix it without knowing what's causing that recursion error.
         if card1.type == self.types['n'] or card1.type == self.types['a']:
             return card1.color == card2.color or card1.symbol == card2.symbol
 
@@ -112,7 +82,13 @@ class Game:
         print('symbols: {}'.format(self.symbols))
         print('\nCARD NAMES (from Card)')
         print(list([Card(card).full for card in self.cards]))
-        print('One card from each type: '+str([card for card in[Card(random.choice([c for c in self.cards if Card(c).type==self.types[type]])).full for type in self.types.keys()]]))
+        print('One card from each type: '+str([
+                card for card in[
+                    Card(random.choice([
+                        c for c in self.cards if Card(c).type==self.types[type]
+                    ])).full for type in self.types.keys()
+                ]
+            ]))
         print('Top card: '+self.draw.getTopCard())
 game = Game()
 
@@ -129,7 +105,7 @@ class Player():
     def getPlayable(self, card=None, fmt='code'):
         cards_ = []
         for i in self.hand:
-            if i in self.hand:
+            if i in self.hand: # why is this here???
                 cards_.extend(Card(i).getMatches(fmt))
         cards = list(set(cards_)) # remove duplicates
         if card != None:
@@ -149,7 +125,7 @@ class Player():
         self.cardCount -= 1
 
 class Card:
-    """Card object constructor for translating card codes
+    """Card object constructor for translating ca rd codes
     n1r would translate to 'red 1'
     asb would translate to 'blue skip'
     d2g would translate to 'green draw 2'
@@ -161,17 +137,32 @@ class Card:
         self.raw = raw
         self.isCode = len(self.raw) == 3
         self.fmt = (lambda:'code'if(self.isCode)else'name')()
-        self.type = game.types[(lambda x:x[0] if(self.isCode)else Card(x).full[0])(self.raw)]
-        self.symbol = game.symbols[(lambda x:x[1] if(self.isCode)else Card(x).full[1])(self.raw)]
-        self.color = game.colors[(lambda x:x[2] if(self.isCode)else Card(x).full[2])(self.raw)]
+        self.type = None
+        self.symbol = None
+        self.color = None
         self.full = None
-
-
-        if len(self.raw) == 2 or len(self.raw) == 3:
+        #game.types[(lambda x:x[0] if(self.isCode)else self.convert()[0])(self.raw)]
+        """
+        with self.raw as x:
+            if self.isCode:
+                game.types[x[0]]
+            else:
+                game.types[self.convert()[0]]
+        """
+        
+        if not self.isCode:
+            pass
+        else:
+            self.type   = game.types[self.raw[0]]
+            self.symbol = game.symbols[self.raw[1]]
+            self.color  = game.colors[self.raw[2]]
+        
+        if self.isCode:
             # if testing:
             #     print(self.color, self.type, self.symbol)
 
-            if self.type == 'normal' or self.type == 'action' or self.type == 'wild': # Normal and Action cards
+            if self.type == 'normal' or self.type == 'action' or self.type == 'wild':
+                # Normal and Action cards
                 self.full = '{} {}'.format(self.color, self.symbol)
             else: # Draw cards
                 self.full = '{} {} {}'.format(self.color, self.type, self.symbol)
@@ -179,25 +170,35 @@ class Card:
             self.full = self.full.title()
         else:
             code = self.raw.lower().split(' ')
+            print(UnoVars.getKeysFromValue(game.types, code))
             self.full = '{}{}{}'.format(
-                game.types[getKeysFromValue(game.types,code)],
-                game.symbol[getKeysFromValue(game.symbol,code)],
-                game.color[getKeysFromValue(game.color,code)],
+                game.types[code],
+                game.symbol[code],
+                game.color[code],
             )
     
     def convert(self):
+        # DEBUG: Causes a recursion error when called inside the constructor
         return Card(self.raw)
 
     def getMatches(self, f='code'):
         r = []
-        cards = list(game.cards) + ['ww'+c for c in list(game.colors.keys())[:len(list(game.colors.keys()))-1]]
+        cards = list(game.cards) + [
+            'ww'+c for c in list(game.colors.keys())[:len(list(game.colors.keys()))-1]
+        ]
         if f == 'code':
-            r = [card for card in cards if game.matchCard((lambda x:self.raw if(self.isCode)else Card(x).code)(self.raw), card)]
+            r = [card for card in cards if game.matchCard((
+                lambda x:self.raw if(self.isCode)else Card(x).code
+            )(self.raw), card)]
         elif f == 'name':
-            r = [Card(card).full for card in cards if game.matchCard((lambda x:self.raw if(self.isCode)else Card(x).code)(self.raw), card)]
+            r = [Card(card).full for card in cards if game.matchCard((
+                lambda x:self.raw if(self.isCode)else Card(x).code
+            )(self.raw), card)]
         else:
-            raise ValueError('Card().getMatches() return value format can only be \'code\' (default) or \'name\'.')
-        return list(set(r)) # remove duplicatesand return a list
+            raise ValueError(
+                'Card().getMatches() return value format can only be \'code\' (default) or \'name\'.'
+            )
+        return list(set(r)) # remove duplicates and return a list
 
     
     def getInfo(self, fmt=None):
@@ -226,7 +227,8 @@ def setup(players=2):
     game.discard.cards.append(game.draw.getTopCard()) # Get the starting card
     game.draw.cards.pop(game.draw.cards.index(game.draw.getTopCard()))
 
-    while not game.discard.getTopCard().startswith('n'): # Starting card cannot be an action/wild card
+    while not game.discard.getTopCard().startswith('n'):
+        # Starting card cannot be an action/wild card
         game.discard.cards.append(game.draw.getTopCard())
         game.draw.cards.pop(game.draw.cards.index(game.draw.getTopCard()))
 
@@ -235,20 +237,28 @@ def turn(player):
     if player == 0:
         cards = []
         print('These are the cards you can draw on this turn:')
-        [print(c) for c in hands[player].getPlayable(game.draw.getTopCard()) if c in hands[player].hand]
+        for c in hands[player].getPlayable(game.draw.getTopCard()):
+            if c in hands[player].hand:
+                cards.append(c)
+                print(Card(c).full)
         # for c in hands[player].getPlayable()
         if len(cards) > 0:
             print('The card you have to match is a '+Card(game.discard.getTopCard()).full+' card')
-            card = Card(input('Choose a card to place (leave blank to draw a new one): ').title()).code
+            card = Card(
+                input('Choose a card to place (leave blank to draw a new one): ').title()
+            ).code
             hands[player].discard(card)
         else:
             print('The card you had to match was a '+Card(game.discard.getTopCard()).full+' card')
             hands[player].draw(1)
             card = Card(game.draw.getTopCard())
-            print('You didn\'t have any cards that you could\'ve drawn, so you draw a {} card instead.'.format(card.full))
+            print('You didn\'t have any cards that you could\'ve drawn,')
+            print('so you draw a {} card instead.'.format(card.full))
             card = card.full
     else:
-        print('The card Player {} has to match is a {} card'.format(player, Card(game.discard.getTopCard()).full))
+        print('The card Player {} has to match is a {} card'.format(
+            player, Card(game.discard.getTopCard()).full)
+        )
         cards = []
 
         for card_ in hands[player].hand:
